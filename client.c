@@ -94,7 +94,7 @@ int main(int argc, char* argv[]){
 			close(socket_n);
 			return 1;
 	}
-		bytes += read_n;
+		number_bytes += read_n;
 
 	}
 	fclose(file);
