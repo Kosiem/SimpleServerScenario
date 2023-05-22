@@ -8,6 +8,10 @@
 #include<stdbool.h>
 
 bool serverStatus = true;
+int socket_n;
+FILE *file = NULL;
+char *filename;
+char *buffer;
 
 void stopServer(){
 	printf("Server is stopping\n");
@@ -24,9 +28,6 @@ int main(int argc, char* argv[]){
 	struct sockaddr_in serv_addr, client_addr;
 	socklen_t client_address;
 	int fileLen;
-	char *filename;
-	FILE * file = NULL;
-	char *buffer;
 	int fileSize;
 	int port;
 	int socket_n;
@@ -57,7 +58,7 @@ int main(int argc, char* argv[]){
 	bind_n = bind(socket_n, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
 	if(bind_n < 0){
 		printf("Error, cannot bind\n");
-		return 1;
+		close(socket_n);
 	}	
 
 	printf("Server: Socket bounded\n");
@@ -69,6 +70,7 @@ int main(int argc, char* argv[]){
 		socket_accept = accept(socket_n, (struct sockaddr*)&serv_addr, &client_address);
 	       	if(socket_accept < 0){
 			printf("Server: Error accepting connection\n");
+			close(socket_n);
 			return 1;
 		}	
 		printf("Server: New connection\n");
@@ -76,6 +78,7 @@ int main(int argc, char* argv[]){
 		read_n = read(socket_accept, &fileLen, sizeof(int));
 		if(read_n < 0){
 			printf("Server: Error reading file name length\n");
+			close(socket_n);
 			return 1;
 		}
 		printf("Server: Lenght of file name obtained\n");
@@ -83,12 +86,17 @@ int main(int argc, char* argv[]){
 		filename = malloc((fileLen + 1) * sizeof(char));
 		if(filename == NULL){
 			printf("Server: Error allocating memory\n");
+			free(filename);
+			close(socket_n);
 			return 1;
 		}
 		read_n = read(socket_accept, filename, fileLen);
 		if(read_n < 0){
 			printf("Server: Error reading file name \n");
+			free(filename);
+			close(socket_n);
 			return 1;
+
 		}
 		printf("Server: File name obtained\n");
 		printf("%s", filename);
@@ -111,7 +119,11 @@ int main(int argc, char* argv[]){
 		write_n = write(socket_accept, &fileSize, sizeof(int));
 		if(write_n < 0){
 			printf("Server: Error sending file size to client\n");
+			free(filename);
+			fclose(file);
+			close(socket_n);
 			return 1;
+
 		}
 		printf("Server: Size of file sended to client\n");
 
@@ -131,12 +143,6 @@ int main(int argc, char* argv[]){
 		close(socket_accept);
 		printf("Server: File sended properly\n");
 
-			
-
-	
 	}
 	return 0;
-
-
-
 }
