@@ -19,7 +19,7 @@ file_name[length_file_name] >
 
                                   < package_1[file_size].
 
---close connection-- --close connection--.
+--close connection--              --close connection--.
 ```
 
 The server runs in a loop until CTRL+C is called, then it closes.
