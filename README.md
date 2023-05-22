@@ -8,8 +8,8 @@ The server makes a file available and the user can download it to themselves.
 
 
 The communication protocol looks like this:
-
-```CLIENT                            SERVER
+```
+CLIENT                            SERVER
 
 length_file_name >
 
